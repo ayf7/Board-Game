@@ -1,10 +1,8 @@
 /** Represents a bishop on a specific square*/
 public class Bishop extends ChessPiece{
 
-    /**
-     * Constructor: creates a Bishop object using the ChessPiece superclass
-     * @param side integer that corresponds to the player number
-     */
+    /** Constructor: creates a Bishop object using the ChessPiece superclass
+     * @param side integer that corresponds to the player number */
     public Bishop(int side) {
         super(side, 2);
     }

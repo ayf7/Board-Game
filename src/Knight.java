@@ -1,10 +1,8 @@
 /** Represents a knight on a specific square*/
 public class Knight extends ChessPiece{
 
-    /**
-     * Constructor: creates a Knight object using the ChessPiece superclass
-     * @param side integer that corresponds to the player number
-     */
+    /** Creates a Knight object using the ChessPiece superclass
+     * @param side integer that corresponds to the player number */
     public Knight(int side) {
         super(side, 1);
     }

@@ -1,10 +1,8 @@
 /** Represents a king on a specific square*/
 public class King extends ChessPiece{
 
-    /**
-     * Constructor: creates a King object using the ChessPiece superclass
-     * @param side integer that corresponds to the player number
-     */
+    /** Creates a King object using the ChessPiece superclass
+     * @param side integer that corresponds to the player number */
     public King(int side) {
         super(side, 5);
     }

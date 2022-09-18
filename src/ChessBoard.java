@@ -14,7 +14,7 @@ public class ChessBoard implements Board {
     // reference to the last piece to have moved
     private ChessPiece lastPiece;
 
-    /** Constructor: creates a new chess board object with the default starting position */
+    /** Creates a new chess board object with the default starting position */
     public ChessBoard() {
         board = new ChessSquare[8][8];
 
@@ -116,6 +116,106 @@ public class ChessBoard implements Board {
         }
     }
 
+    @Override
+    public ArrayList<Move> findLegalMoves(String coord) {
+        // retrieves the list of moves the piece can move to regardless of checks
+        ArrayList<Move> moveList = findMoves(coord);
+        if (moveList == null) {
+            return null;
+        }
+
+        // gathers variables
+        ChessSquare square = coordinateToSquare(coord);
+        ChessPiece piece = square.getPiece();
+        String type = coordinateToSquare(coord).pieceType();
+        int col = square.getCol();
+        int row = square.getRow();
+
+        // if the move leads to the player in check (true), remove that from the arraylist
+        for (int i = moveList.size()-1; i >= 0; i--) {
+            if (runHypothetical(coord, moveList.get(i))) {
+                moveList.remove(i);
+            }
+        }
+
+        // add king castle moves
+        if (type.equals("king") && piece.hasNotMoved()) {
+            // create a temporary array list store new lists to add as we traverse the moveList array
+            ArrayList<Move> additionalMoves = new ArrayList<>();
+            for (Move move : moveList) {
+                for (int i = -1; i <= 1; i += 2) {
+                    // if one of the horizontal moves is still legal after the removal phase
+                    int colScan = col + i;
+                    if (board[row][colScan] == coordinateToSquare(move.getTo())) {
+                        // clear the entire horizontal row until it reaches the rook or goes out of bounds
+                        boolean next = true;
+                        while (next) {
+                            colScan += i;
+                            if (!inRange(row, colScan)) {
+                                next = false;
+                            }
+                            // if the scan reaches a piece, checks if the piece is a rook that not moved
+                            // note: same type is implied if the piece has not moved
+                            else if (board[row][colScan].getPiece() != null) {
+                                if (board[row][colScan].getPiece().getTypeName().equals("rook") &&
+                                        board[row][colScan].getPiece().hasNotMoved()) {
+                                    additionalMoves.add(new CastleMove(board[row][col + 2*i], board[row][colScan], board[row][col+i]));
+                                }
+                                next = false;
+                            }
+                        }
+                    }
+                }
+            }
+            // run hypothetical for these castle moves and add the new castle moves to the main move list
+            for (int i = additionalMoves.size()-1; i >= 0; i--) {
+                if (!runHypothetical(coord, additionalMoves.get(i))) {
+                    moveList.add(additionalMoves.get(i));
+                }
+            }
+        }
+        return moveList;
+    }
+
+    @Override
+    public void reset() {
+        // remove all pieces on any square present
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board[row][col].hasPiece()) {
+                    board[row][col].remove();
+                }
+            }
+        }
+        for (ChessPiece[] chessPieces : pieceList) {
+            for (int col = 0; col < pieceList[0].length; col++) {
+                chessPieces[col].reset();
+            }
+        }
+        // recreate the board
+        createBoard();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder boardString = new StringBuilder();
+        for (int row = 7; row >= 1; row--) {
+            for (int col = 0; col < 8; col++) {
+                boardString.append(board[row][col]);
+            }
+            boardString.append("\n");
+        }
+        for (int col = 0; col < 8; col++) {
+            boardString.append(board[0][col]);
+        }
+        return boardString.toString();
+    }
+
+    /** Finds all squares a piece at the specified coordinate covers, not necessarily where it
+     * can legally move to
+     * @Pre-condition: square at coord must have a piece
+     * @param coord coordinate with the piece that we want to find the occupying squares
+     * @return covered squares as move objects in ArrayList */
     public ArrayList<Move> findMoves(String coord) {
         // list of coordinate strings to be returned
         ChessSquare square = coordinateToSquare(coord);
@@ -264,74 +364,13 @@ public class ChessBoard implements Board {
         return moveList;
     }
 
-    @Override
-    public ArrayList<Move> findLegalMoves(String coord) {
-        // retrieves the list of moves the piece can move to regardless of checks
-        ArrayList<Move> moveList = findMoves(coord);
-        if (moveList == null) {
-            return null;
-        }
-
-        // gathers variables
-        ChessSquare square = coordinateToSquare(coord);
-        ChessPiece piece = square.getPiece();
-        String type = coordinateToSquare(coord).pieceType();
-        int col = square.getCol();
-        int row = square.getRow();
-
-        // if the move leads to the player in check (true), remove that from the arraylist
-        for (int i = moveList.size()-1; i >= 0; i--) {
-            if (runHypothetical(coord, moveList.get(i))) {
-                moveList.remove(i);
-            }
-        }
-
-        // add king castle moves
-        if (type.equals("king") && piece.hasNotMoved()) {
-            // create a temporary array list store new lists to add as we traverse the moveList array
-            ArrayList<Move> additionalMoves = new ArrayList<>();
-            for (Move move : moveList) {
-                for (int i = -1; i <= 1; i += 2) {
-                    // if one of the horizontal moves is still legal after the removal phase
-                    int colScan = col + i;
-                    if (board[row][colScan] == coordinateToSquare(move.getTo())) {
-                        // clear the entire horizontal row until it reaches the rook or goes out of bounds
-                        boolean next = true;
-                        while (next) {
-                            colScan += i;
-                            if (!inRange(row, colScan)) {
-                                next = false;
-                            }
-                            // if the scan reaches a piece, checks if the piece is a rook that not moved
-                            // note: same type is implied if the piece has not moved
-                            else if (board[row][colScan].getPiece() != null) {
-                                if (board[row][colScan].getPiece().getTypeName().equals("rook") &&
-                                        board[row][colScan].getPiece().hasNotMoved()) {
-                                    additionalMoves.add(new CastleMove(board[row][col + 2*i], board[row][colScan], board[row][col+i]));
-                                }
-                                next = false;
-                            }
-                        }
-                    }
-                }
-            }
-            // run hypothetical for these castle moves and add the new castle moves to the main move list
-            for (int i = additionalMoves.size()-1; i >= 0; i--) {
-                if (!runHypothetical(coord, additionalMoves.get(i))) {
-                    moveList.add(additionalMoves.get(i));
-                }
-            }
-        }
-        return moveList;
-    }
-
-    /** inRange(): checks if the row and column are in range of the 2D board. Private method because
-     * it should be used exclusively by the ChessBoard.
+    /** Checks if the row and column are in range of the 2D board. Private method because
+     * it should be used exclusively by the ChessBoard
      * @param row row being checked
      * @param col column being checked
      * @return true if the rows and columns are in the 2D board, false if not
      */
-    protected boolean inRange(int row, int col) {
+    private boolean inRange(int row, int col) {
         return (0 <= row && row <= 7 && 0 <= col && col <= 7);
     }
 
@@ -360,12 +399,11 @@ public class ChessBoard implements Board {
         return testBoard.kingInCheck(other);
     }
 
-    /** kingInCheck(int): checks if the king of either side is in check at any given position
+    /** Checks if the king of either side is in check at any given position
      * @Pre-condition: the king of "other" must not be in check itself
      * @param other the side we are determining if in check
      * @return true if the side is in check, false if not
      */
-
     public boolean kingInCheck(int other) {
         // scans the entire board for the other side's pieces
         for (ChessSquare[] row : board) {
@@ -391,7 +429,7 @@ public class ChessBoard implements Board {
         return false;
     }
 
-    /** coordinateToSquare(): takes a coordinate combination (such as a3) and returns the
+    /** Takes a coordinate combination (such as a3) and returns the
      * corresponding Square in the 2D array that is at that coordinate.
      * @Pre-condition: coord must be a valid coordinate: {a-h}{1-8}, case sensitive
      * @param coord standard chess coordinate system in the form of a string
@@ -407,7 +445,7 @@ public class ChessBoard implements Board {
         return board[row][col];
     }
 
-    /** squareToCoordinate(): takes a square object and returns the corresponding string coordinate
+    /** Takes a square object and returns the corresponding string coordinate
      * in the 2D array.
      * @Post-condition: returning string must be a valid coordinate: {a-h}{1-8}, case sensitive
      * @param square square that we wish to get the coordinate of
@@ -420,10 +458,10 @@ public class ChessBoard implements Board {
         // converts them into respective ASCII characters
         char letter = (char)(col + 97);
         char number = (char)(row + 49);
-        return Character.toString(letter) + Character.toString(number);
+        return letter + Character.toString(number);
     }
 
-    /** listOfCoords(int): returns a list of the coordinates where all of one side's pieces are
+    /** Returns a list of the coordinates where all of one side's pieces are
      * @Pre-condition: side must be 1 or 2
      * @return a list of squares of that side
      */
@@ -442,48 +480,15 @@ public class ChessBoard implements Board {
         }
         return list;
     }
-    @Override
-    public void reset() {
-        // remove all pieces on any square present
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                if (board[row][col].hasPiece()) {
-                    board[row][col].remove();
-                }
-            }
-        }
-        for (ChessPiece[] chessPieces : pieceList) {
-            for (int col = 0; col < pieceList[0].length; col++) {
-                chessPieces[col].reset();
-            }
-        }
-        // recreate the board
-        createBoard();
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder boardString = new StringBuilder();
-        for (int row = 7; row >= 1; row--) {
-            for (int col = 0; col < 8; col++) {
-                boardString.append(board[row][col]);
-            }
-            boardString.append("\n");
-        }
-        for (int col = 0; col < 8; col++) {
-            boardString.append(board[0][col]);
-        }
-        return boardString.toString();
-    }
-
-    /** ChessBoardTester: special subclass of ChessBoard used primarily for testing the
+    /** Special subclass of ChessBoard used primarily for testing the
      * legality of moves in runHypothetical. Creates a duplicate copy of the ChessBoard at any instance.
      * Contains an overriden movePiece with fewer processes, custom constructor.*/
-    public class ChessBoardTester extends ChessBoard {
+    private static class ChessBoardTester extends ChessBoard {
 
         /** Constructor of a tester chess board, pieces initialized in the same configuration
          * as the parameter. Does not account for EPV, unmoved states.
-         * @param startPosition the 2D array of ChessSquares that we wish to test on*/
+         * @param startPosition the 2D array of ChessSquares that we wish to test on */
         ChessBoardTester(ChessSquare[][] startPosition) {
             board = new ChessSquare[8][8];
             for (int row = 0; row < 8; row++) {
@@ -528,4 +533,3 @@ public class ChessBoard implements Board {
         }
     }
 }
-

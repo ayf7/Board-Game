@@ -1,4 +1,4 @@
-/** represents a possible move by a player */
+/** Represents a possible move by a player */
 public class Move {
     // coordinate of the square that the piece will move to
     private final String to;

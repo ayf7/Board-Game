@@ -5,18 +5,18 @@ public class Pawn extends ChessPiece{
     // can be taken through en passant
     private boolean epVulnerable;
 
-    /**
-     * Constructor: creates a Pawn object using the ChessPiece superclass.
-     * @param side integer that corresponds to the player number
-     */
+    /** Creates a Pawn object using the ChessPiece superclass.
+     * @param side integer that corresponds to the player number */
     public Pawn(int side) {
         super(side, 0);
     }
 
+    /** Returns the EPV state of a pawn */
     public boolean getEPVState() {
         return epVulnerable;
     }
 
+    /** Changes the EPV state of the pawn */
     public void toggleEPVState() {
         epVulnerable = !epVulnerable;
     }

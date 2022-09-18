@@ -17,9 +17,7 @@ public abstract class ChessPiece {
     // game. True if the piece has not moved.
     private boolean unmoved;
 
-    /**
-     * Constructor: creates a Piece object
-     *
+    /** Creates a chess piece (not of type ChessPiece)
      * @param side integer that corresponds to the player number
      * @param type integer that corresponds to the index in the types list
      */
@@ -31,23 +29,27 @@ public abstract class ChessPiece {
         unmoved = true;
     }
 
+    /** Returns the side of the piece */
     public int getSide() {
         return side;
     }
 
+    /** Returns the piece type, in a string */
     public String getTypeName() {
         return typeList[type];
     }
 
+    /** Returns whether the piece has moved */
     public boolean hasNotMoved() {
         return unmoved;
     }
 
-    /** move(): sets the unmoved state to true after the pawn moves */
+    /** Sets the unmoved state to true after the pawn moves */
     public void move() {
         unmoved = false;
     }
 
+    /** Resets the piece to initial state */
     public void reset() {
         unmoved = true;
     }

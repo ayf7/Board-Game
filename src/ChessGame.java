@@ -1,29 +1,34 @@
 import java.util.*;
 
+/** Represents a chess game */
 public class ChessGame implements BoardGame {
 
     /* Instance variables: includes 2 player objects, turn number, and player turn */
 
     // list of player objects, represents the 2 players that are playing the board game
     // white is index 0, black is index 1
-    private Player[] players = new Player[]{new Player(), new Player()};
+    private final Player[] players;
 
     // playerTurn: integer between 1 and 2, corresponding to the player's playerNum value
-    private int playerTurn = 1;
+    private int playerTurn;
 
     // chess board in the chess game
-    private ChessBoard board = new ChessBoard();
+    private final ChessBoard board;
 
-    /** Constructor: gets the player names */
+    /** Creates a new chess game */
     public ChessGame() {
+        players = new Player[]{new Player(), new Player()};
+        playerTurn = 1;
+        board = new ChessBoard();
     }
 
     @Override
     public void startGame() {
         // players start making their moves
         boolean nextMove = true;
+        System.out.println(board);
+        System.out.println(players[playerTurn - 1].getName() + "'s turn to move.");
         while (nextMove) {
-            System.out.println(board);
             // when no moves exist left, the while loop will break
             nextMove = promptPlayerMove();
         }
@@ -68,7 +73,6 @@ public class ChessGame implements BoardGame {
         }
 
         // if neither checkmate nor stalemate are found, prompt player move
-        System.out.println(players[playerTurn - 1].getName() + "'s turn to move.");
         String from = "";
         boolean invalid = true;
 
@@ -77,8 +81,8 @@ public class ChessGame implements BoardGame {
         while (invalid) {
             // ask for the square with the piece the user wishes to move
             Scanner input = new Scanner(System.in);
-
             String inputCoord = input.nextLine();
+
             // checks if the input is a coord
             for (String coord : moves.keySet()) {
                 if (inputCoord.equals(coord) && moves.get(coord).size() > 0) {
@@ -100,6 +104,9 @@ public class ChessGame implements BoardGame {
             Scanner input = new Scanner(System.in);
             String inputCoord = input.nextLine();
             // checks if the input string is in the list of moves from key "from"
+            if (inputCoord.equals("back")) {
+                return true;
+            }
             for (Move move : moves.get(from)) {
                 if (move.getTo().equals(inputCoord)) {
                     move1 = move;
@@ -113,6 +120,8 @@ public class ChessGame implements BoardGame {
         // move the piece
         board.movePiece(from, move1);
         playerTurn = 3 - playerTurn;
+        System.out.println(board);
+        System.out.println(players[playerTurn - 1].getName() + "'s turn to move.");
         return true;
     }
 
@@ -170,9 +179,10 @@ public class ChessGame implements BoardGame {
         players[1] = temp;
     }
 
-    /** Prints out the name of each player and their scores */
+    /** Prints out the name of each player and their scores. */
     public void printStats() {
         System.out.println(players[0].getName() + ": " + players[0].getScore());
         System.out.println(players[1].getName() + ": " + players[1].getScore());
     }
 }
+
