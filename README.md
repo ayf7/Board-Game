@@ -1,6 +1,6 @@
 # Board Games
 <h3>Project Specifications</h3>
-Date Started: September 4, 2022<br>
+Date Started: August 4, 2022<br>
 Programming Language: Java 18<br>
 Build System:	IntelliJ<br>
 JDK: Eclipse Termurin v17.0.4<br>

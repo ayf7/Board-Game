@@ -107,6 +107,7 @@ public class ChessGame implements BoardGame {
             if (inputCoord.equals("back")) {
                 return true;
             }
+            // access the move from the hash table
             for (Move move : moves.get(from)) {
                 if (move.getTo().equals(inputCoord)) {
                     move1 = move;
