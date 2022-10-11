@@ -1,6 +1,7 @@
-/** General interface for a board game */
-interface BoardGame {
+package BoardGame;
 
+/** General interface for a board game */
+public interface Game {
 
     /** Manages the game over multiple rounds, manages resetting and score updates */
     void play();
@@ -18,7 +19,10 @@ interface BoardGame {
     /** Ends the game with an ending message
      * updates score
      * prompts players to play again
-     * @param winnerSide the player number of the winner. 1 = player 1, 2 = player 2, 0 = draw (if applicable)
+     * @param winnerSide the player number of the winner.
+     *                   <p>1 = player 1
+     *                   <p>2 = player 2
+     *                   <p>0 = draw (if applicable)
      * @return true if playing again, false if not */
     boolean endGame(int winnerSide);
 
