@@ -7,7 +7,7 @@ JDK: Eclipse Termurin v17.0.4<br>
 Last Updated: October 11, 2022<br>
 <h3>Overview</h3>
 <p>The program allows the user to play different board games in the console, using user
-  input to chessMove the pieces and update the board accordingly. Each game requires two
+  input to move the pieces and update the board accordingly. Each game requires two
   players. I developed this program to practice the principles of object-oriented programming,
   create algorithms to tackle complicated problems (such as finding the legal moves of the
   pieces when factoring in pins and checks), and develop good documentation habits.</p>
