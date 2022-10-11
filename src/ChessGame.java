@@ -1,18 +1,17 @@
+import BoardGame.Game;
 import java.util.*;
 
 /** Represents a chess game */
-public class ChessGame implements BoardGame {
+public class ChessGame implements Game {
 
-    /* Instance variables: includes 2 player objects, turn number, and player turn */
-
-    // list of player objects, represents the 2 players that are playing the board game
-    // white is index 0, black is index 1
+    /** list of player objects, represents the 2 players that are playing the board game
+    // white is index 0, black is index 1 */
     private final Player[] players;
 
-    // playerTurn: integer between 1 and 2, corresponding to the player's playerNum value
+    /** Integer between 1 and 2, corresponding to the player's playerNum value */
     private int playerTurn;
 
-    // chess board in the chess game
+    /** Chess board in the chess game */
     private final ChessBoard board;
 
     /** Creates a new chess game */
@@ -57,14 +56,14 @@ public class ChessGame implements BoardGame {
     @Override
     public boolean promptPlayerMove() {
         // gathers all legal moves of the player moving
-        Hashtable<String, ArrayList<Move>> moves = new Hashtable<>();
+        Hashtable<String, ArrayList<ChessMove>> moves = new Hashtable<>();
         ArrayList<String> coords = board.listOfCoords(playerTurn);
 
         int count = 0;
         for (String coord : coords) {
-            ArrayList<Move> coordMoves = board.findLegalMoves(coord);
-            moves.put(coord, coordMoves);
-            count += coordMoves.size();
+            ArrayList<ChessMove> coordChessMoves = board.findLegalMoves(coord);
+            moves.put(coord, coordChessMoves);
+            count += coordChessMoves.size();
         }
 
         // if there are no legal moves by the player, run checkmate and stalemate endings
@@ -96,7 +95,7 @@ public class ChessGame implements BoardGame {
         }
 
         // once input has been found, ask for a second input
-        Move move1 = null;
+        ChessMove chessMove1 = null;
         invalid = true;
         System.out.print("Move piece where? ");
         while (invalid) {
@@ -108,9 +107,9 @@ public class ChessGame implements BoardGame {
                 return true;
             }
             // access the move from the hash table
-            for (Move move : moves.get(from)) {
-                if (move.getTo().equals(inputCoord)) {
-                    move1 = move;
+            for (ChessMove chessMove : moves.get(from)) {
+                if (chessMove.getTo().equals(inputCoord)) {
+                    chessMove1 = chessMove;
                     invalid = false;
                 }
             }
@@ -119,7 +118,7 @@ public class ChessGame implements BoardGame {
             }
         }
         // move the piece
-        board.movePiece(from, move1);
+        board.movePiece(from, chessMove1);
         playerTurn = 3 - playerTurn;
         System.out.println(board);
         System.out.println(players[playerTurn - 1].getName() + "'s turn to move.");

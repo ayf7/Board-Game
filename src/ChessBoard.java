@@ -1,17 +1,22 @@
+import BoardGame.Board;
+import BoardGame.Move;
+import BoardGame.Square;
 import java.util.*;
 
 /** Represents the chess board of a chess game, implements the board interface */
 public class ChessBoard implements Board {
 
-    // 2D array of square objects, representing the board
+    /** 2D array of square objects, representing the board */
     protected ChessSquare[][] board;
 
-    // immutable 2D array of pieces for permanent reference
-    // row 0 is the list of pieces for player 1, row 1 is the list of pieces for player 2
-    // columns 0-7 are the pawns, columns 8-15 are the pieces in order from a/h1 rook to a/h8 rook
+    /** Immutable 2D array of pieces for permanent reference
+     <p>
+     * Row 0 is the list of pieces for player 1, row 1 is the list of pieces for player 2
+     <p>
+     * Columns 0-7 are the pawns, columns 8-15 are the pieces in order from a/h1 rook to a/h8 rook */
     private final ChessPiece[][] pieceList;
 
-    // reference to the last piece to have moved
+    /** Reference to the last piece to have moved */
     private ChessPiece lastPiece;
 
     /** Creates a new chess board object with the default starting position */
@@ -60,30 +65,30 @@ public class ChessBoard implements Board {
     }
 
     @Override
-    public void movePiece(String from, Move move) {
+    public void movePiece(String from, Move chessMove) {
         // updates EPV states if necessary
         if (lastPiece.getTypeName().equals("pawn") && ((Pawn) lastPiece).getEPVState()) {
             ((Pawn) lastPiece).toggleEPVState();
         }
 
         // move the piece
-        coordinateToSquare(move.getTo()).add(coordinateToSquare(from).getPiece());
+        coordinateToSquare(chessMove.getTo()).add(coordinateToSquare(from).getPiece());
         coordinateToSquare(from).remove();
 
         // updates instance variables and values
-        lastPiece = coordinateToSquare(move.getTo()).getPiece();
+        lastPiece = coordinateToSquare(chessMove.getTo()).getPiece();
         int side = lastPiece.getSide();
         lastPiece.move();
 
         // additional changes that need to be made if necessary - promotion, castling, en passant
-        switch (move.getType()) {
+        switch (chessMove.getType()) {
             // remove the pawn that is en passant-ed
-            case "EPMove" -> coordinateToSquare(((EPMove) move).getPawn()).remove();
+            case "EPMove" -> coordinateToSquare(((EPChessMove) chessMove).getPawn()).remove();
             case "CastleMove" -> {
                 // move the corresponding rook
-                coordinateToSquare(((CastleMove) move).getRookTo()).add(
-                        coordinateToSquare(((CastleMove) move).getRookFrom()).getPiece());
-                coordinateToSquare(((CastleMove) move).getRookFrom()).remove();
+                coordinateToSquare(((CastleChessMove) chessMove).getRookTo()).add(
+                        coordinateToSquare(((CastleChessMove) chessMove).getRookFrom()).getPiece());
+                coordinateToSquare(((CastleChessMove) chessMove).getRookFrom()).remove();
             }
             case "Promote" -> {
                 Scanner scan = new Scanner(System.in);
@@ -94,19 +99,19 @@ public class ChessBoard implements Board {
                     newType = scan.nextLine();
                     switch (newType) {
                         case "knight" -> {
-                            coordinateToSquare(move.getTo()).add(new Knight(side));
+                            coordinateToSquare(chessMove.getTo()).add(new Knight(side));
                             valid = true;
                         }
                         case "bishop" -> {
-                            coordinateToSquare(move.getTo()).add(new Bishop(side));
+                            coordinateToSquare(chessMove.getTo()).add(new Bishop(side));
                             valid = true;
                         }
                         case "rook" -> {
-                            coordinateToSquare(move.getTo()).add(new Rook(side));
+                            coordinateToSquare(chessMove.getTo()).add(new Rook(side));
                             valid = true;
                         }
                         case "queen" -> {
-                            coordinateToSquare(move.getTo()).add(new Queen(side));
+                            coordinateToSquare(chessMove.getTo()).add(new Queen(side));
                             valid = true;
                         }
                     }
@@ -117,10 +122,10 @@ public class ChessBoard implements Board {
     }
 
     @Override
-    public ArrayList<Move> findLegalMoves(String coord) {
+    public ArrayList<ChessMove> findLegalMoves(String coord) {
         // retrieves the list of moves the piece can move to regardless of checks
-        ArrayList<Move> moveList = findMoves(coord);
-        if (moveList == null) {
+        ArrayList<ChessMove> chessMoveList = findMoves(coord);
+        if (chessMoveList == null) {
             return null;
         }
 
@@ -132,21 +137,21 @@ public class ChessBoard implements Board {
         int row = square.getRow();
 
         // if the move leads to the player in check (true), remove that from the arraylist
-        for (int i = moveList.size()-1; i >= 0; i--) {
-            if (runHypothetical(coord, moveList.get(i))) {
-                moveList.remove(i);
+        for (int i = chessMoveList.size()-1; i >= 0; i--) {
+            if (runHypothetical(coord, chessMoveList.get(i))) {
+                chessMoveList.remove(i);
             }
         }
 
         // add king castle moves
         if (type.equals("king") && piece.hasNotMoved()) {
             // create a temporary array list store new lists to add as we traverse the moveList array
-            ArrayList<Move> additionalMoves = new ArrayList<>();
-            for (Move move : moveList) {
+            ArrayList<ChessMove> additionalChessMoves = new ArrayList<>();
+            for (ChessMove chessMove : chessMoveList) {
                 for (int i = -1; i <= 1; i += 2) {
                     // if one of the horizontal moves is still legal after the removal phase
                     int colScan = col + i;
-                    if (board[row][colScan] == coordinateToSquare(move.getTo())) {
+                    if (board[row][colScan] == coordinateToSquare(chessMove.getTo())) {
                         // clear the entire horizontal row until it reaches the rook or goes out of bounds
                         boolean next = true;
                         while (next) {
@@ -159,7 +164,7 @@ public class ChessBoard implements Board {
                             else if (board[row][colScan].getPiece() != null) {
                                 if (board[row][colScan].getPiece().getTypeName().equals("rook") &&
                                         board[row][colScan].getPiece().hasNotMoved()) {
-                                    additionalMoves.add(new CastleMove(board[row][col + 2*i], board[row][colScan], board[row][col+i]));
+                                    additionalChessMoves.add(new CastleChessMove(board[row][col + 2*i], board[row][colScan], board[row][col+i]));
                                 }
                                 next = false;
                             }
@@ -168,13 +173,13 @@ public class ChessBoard implements Board {
                 }
             }
             // run hypothetical for these castle moves and add the new castle moves to the main move list
-            for (int i = additionalMoves.size()-1; i >= 0; i--) {
-                if (!runHypothetical(coord, additionalMoves.get(i))) {
-                    moveList.add(additionalMoves.get(i));
+            for (int i = additionalChessMoves.size()-1; i >= 0; i--) {
+                if (!runHypothetical(coord, additionalChessMoves.get(i))) {
+                    chessMoveList.add(additionalChessMoves.get(i));
                 }
             }
         }
-        return moveList;
+        return chessMoveList;
     }
 
     @Override
@@ -216,7 +221,7 @@ public class ChessBoard implements Board {
      * @Pre-condition: square at coord must have a piece
      * @param coord coordinate with the piece that we want to find the occupying squares
      * @return covered squares as move objects in ArrayList */
-    public ArrayList<Move> findMoves(String coord) {
+    public ArrayList<ChessMove> findMoves(String coord) {
         // list of coordinate strings to be returned
         ChessSquare square = coordinateToSquare(coord);
         ChessPiece piece = square.getPiece();
@@ -228,7 +233,7 @@ public class ChessBoard implements Board {
 
         // if the piece exists, find all legal moves regardless of check/pin status
         // ArrayList to store all the valid squares
-        ArrayList<Move> moveList = new ArrayList<>();
+        ArrayList<ChessMove> chessMoveList = new ArrayList<>();
 
         // gathers all necessary info from the square and piece
         String type = coordinateToSquare(coord).pieceType();
@@ -251,17 +256,17 @@ public class ChessBoard implements Board {
             if (inRange(row+i, col) && !board[row+i][col].hasPiece()) {
                 // checks if the move is promotional
                 if (row+i == 7) {
-                    moveList.add(new Move(board[row+i][col], "Promote"));
+                    chessMoveList.add(new ChessMove(board[row+i][col], "Promote"));
                 }
                 else {
-                    moveList.add(new Move(board[row+i][col]));
+                    chessMoveList.add(new ChessMove(board[row+i][col]));
                 }
 
                 // moving forward two tiles
                 // checks if the row 2 tiles above is within range and there is no piece there
                 if (inRange(row+2*i, col) && piece.hasNotMoved()) {
                     if (!board[row+2*i][col].hasPiece()) {
-                        moveList.add(new Move(board[row+2*i][col], "EPV"));
+                        chessMoveList.add(new ChessMove(board[row+2*i][col], "EPV"));
                     }
                 }
             }
@@ -273,10 +278,10 @@ public class ChessBoard implements Board {
                         && board[row+i][col+j].pieceSide() == 3-side) {
                     // checks if the capture is promotional
                     if (row+i == 7) {
-                        moveList.add(new Move(board[row+i][col+j], "Promote"));
+                        chessMoveList.add(new ChessMove(board[row+i][col+j], "Promote"));
                     }
                     else {
-                        moveList.add(new Move(board[row+i][col+j], "Capture"));
+                        chessMoveList.add(new ChessMove(board[row+i][col+j], "Capture"));
                     }
                 }
             }
@@ -290,7 +295,7 @@ public class ChessBoard implements Board {
                         && board[row][col+j].pieceType().equals("pawn")
                         && ((Pawn) board[row][col+j].getPiece()).getEPVState()
                         && board[row][col+j].pieceSide() == 3-side) {
-                    moveList.add(new EPMove(board[row+i][col+j], board[row][col+j]));
+                    chessMoveList.add(new EPChessMove(board[row+i][col+j], board[row][col+j]));
                 }
             }
         }
@@ -344,14 +349,14 @@ public class ChessBoard implements Board {
                             // if a piece is there, if the piece is of opposite side add it to the list
                             // because it can be captured
                             if (board[tempRow][tempCol].pieceSide() == 3-side) {
-                                moveList.add(new Move(board[tempRow][tempCol], "Capture"));
+                                chessMoveList.add(new ChessMove(board[tempRow][tempCol], "Capture"));
                             }
                             // end the loop condition if it has not already
                             next = false;
                         }
                         // if there is no piece, add the square
                         else {
-                            moveList.add(new Move(board[tempRow][tempCol]));
+                            chessMoveList.add(new ChessMove(board[tempRow][tempCol]));
                         }
                     }
                     // if the coordinate is out of bounds, end the loop condition
@@ -361,7 +366,7 @@ public class ChessBoard implements Board {
                 }
             }
         }
-        return moveList;
+        return chessMoveList;
     }
 
     /** Checks if the row and column are in range of the 2D board. Private method because
@@ -374,14 +379,14 @@ public class ChessBoard implements Board {
         return (0 <= row && row <= 7 && 0 <= col && col <= 7);
     }
 
-    /** Takes a Move object and determines whether that move will lead to check, which is not
+    /** Takes a BoardGame.Move object and determines whether that move will lead to check, which is not
      * allowed
      * @Pre-condition: coord must have the piece to be moved, move is the corresponding move that
      * the piece can legally make
-     * @param move the move that is being tested
+     * @param chessMove the move that is being tested
      * @return true if the king is in check after doing the move, false if it is not
      */
-    private boolean runHypothetical(String coord, Move move) {
+    private boolean runHypothetical(String coord, ChessMove chessMove) {
 
         // gets the number of the other side using the coordinate of the piece to be moved
         int other = 3 - coordinateToSquare(coord).getPiece().getSide();
@@ -393,7 +398,7 @@ public class ChessBoard implements Board {
         ChessBoardTester testBoard = new ChessBoardTester(board);
 
         // performs the move
-        testBoard.movePiece(coord, move);
+        testBoard.movePiece(coord, chessMove);
 
         // determines whether this piece results in check
         return testBoard.kingInCheck(other);
@@ -414,12 +419,12 @@ public class ChessBoard implements Board {
 
                     // for each of the other side's pieces, the findMoves argument is run to find all
                     // squares the piece can observe (not necessarily where it can move to legally)
-                    ArrayList<Move> list = findMoves(squareToCoordinate(square));
+                    ArrayList<ChessMove> list = findMoves(ChessBoard.squareToCoordinate(square));
 
                     // checks if each move of that piece targets the side's king
-                    for (Move otherMove : list) {
-                        if (coordinateToSquare(otherMove.getTo()).getPiece() != null &&
-                                coordinateToSquare(otherMove.getTo()).pieceType().equals("king")) {
+                    for (ChessMove otherChessMove : list) {
+                        if (coordinateToSquare(otherChessMove.getTo()).getPiece() != null &&
+                                coordinateToSquare(otherChessMove.getTo()).pieceType().equals("king")) {
                             return true;
                         }
                     }
@@ -444,14 +449,13 @@ public class ChessBoard implements Board {
         int row = Integer.parseInt(coord.substring(1))-1;
         return board[row][col];
     }
-
     /** Takes a square object and returns the corresponding string coordinate
      * in the 2D array.
      * @Post-condition: returning string must be a valid coordinate: {a-h}{1-8}, case sensitive
      * @param square square that we wish to get the coordinate of
      * @return corresponding string at that row and column
      */
-    public static String squareToCoordinate(ChessSquare square) {
+    public static String squareToCoordinate(Square square) {
         // gets row and column numbers
         int row = square.getRow();
         int col = square.getCol();
@@ -516,18 +520,18 @@ public class ChessBoard implements Board {
         }
 
         @Override
-        public void movePiece(String from, Move move) {
+        public void movePiece(String from, Move chessMove) {
             // move the piece
-            coordinateToSquare(move.getTo()).add(coordinateToSquare(from).getPiece());
+            coordinateToSquare(chessMove.getTo()).add(coordinateToSquare(from).getPiece());
             coordinateToSquare(from).remove();
 
             // additional changes that need to be made if necessary - promotion, castling, en passant
-            switch (move.getType()) {
-                case "EPMove" -> coordinateToSquare(((EPMove) move).getPawn()).remove();
+            switch (chessMove.getType()) {
+                case "EPMove" -> coordinateToSquare(((EPChessMove) chessMove).getPawn()).remove();
                 case "CastleMove" -> {
-                    coordinateToSquare(((CastleMove) move).getRookTo()).add(
-                            coordinateToSquare(((CastleMove) move).getRookFrom()).getPiece());
-                    coordinateToSquare(((CastleMove) move).getRookFrom()).remove();
+                    coordinateToSquare(((CastleChessMove) chessMove).getRookTo()).add(
+                            coordinateToSquare(((CastleChessMove) chessMove).getRookFrom()).getPiece());
+                    coordinateToSquare(((CastleChessMove) chessMove).getRookFrom()).remove();
                 }
             }
         }

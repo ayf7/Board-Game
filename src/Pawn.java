@@ -1,8 +1,8 @@
 /** Represents a pawn on a specific square*/
 public class Pawn extends ChessPiece{
 
-    // epVulnerable: stands for "en-passant vulnerable", indicates whether it
-    // can be taken through en passant
+    /** Stands for "en-passant vulnerable", indicates whether it
+    // can be taken through en passant */
     private boolean epVulnerable;
 
     /** Creates a Pawn object using the ChessPiece superclass.

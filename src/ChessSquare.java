@@ -1,12 +1,20 @@
-/** Represents a square or tile on the board */
-public class ChessSquare {
+import BoardGame.Piece;
+import BoardGame.Square;
 
-    // Piece, represents the piece that occupies the square, null if there is no such piece
+/** Represents a square or tile on the board */
+public class ChessSquare implements Square {
+
+    /** The piece that occupies the square. Null if there is no such piece */
     private ChessPiece piece;
+
+    /** Determines if this square has a piece */
     private boolean hasPiece;
 
-    // row and column: represents the row and column of the square
-    private int row, col;
+    /** Row of the square */
+    private final int row;
+
+    /** Column of the square */
+    private final int col;
 
     /** Constructor: creates a Square object
      * @param row row of the square on the board
@@ -20,41 +28,37 @@ public class ChessSquare {
         this.col = col;
     }
 
-    /** add(piece): adds a piece to the square
-     * @param piece the piece to be added to the square
-     * @Pre-condition: piece must not be null
-     */
-    public void add(ChessPiece piece) {
+    @Override
+    public void add(Piece piece) {
         assert piece != null;
-        this.piece = piece;
+        this.piece = (ChessPiece) piece;
         hasPiece = true;
     }
 
-    /** remove(): remove a piece from the square
-     * @Pre-condition: square must have 'piece' pointing to a Piece object
-     */
+    @Override
     public void remove() {
         piece = null;
         hasPiece = false;
     }
 
+    @Override
     public boolean hasPiece() {
         return hasPiece;
     }
 
-    /** getPiece(): returns the piece object */
+    @Override
     public ChessPiece getPiece() {
         assert hasPiece;
         return piece;
     }
 
-    /** pieceType(): returns the type of piece.
-     * @Pre-condition: square has a piece */
+    @Override
     public String pieceType() {
         assert hasPiece;
         return piece.getTypeName();
     }
 
+    @Override
     public int pieceSide() {
         assert hasPiece;
         return piece.getSide();
@@ -75,10 +79,12 @@ public class ChessSquare {
         }
     }
 
+    @Override
     public int getRow() {
         return row;
     }
 
+    @Override
     public int getCol() {
         return col;
     }

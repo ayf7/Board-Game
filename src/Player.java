@@ -2,9 +2,11 @@ import java.util.Scanner;
 
 /** Represents a player of a board game */
 public class Player {
-    // score of the player. Non-negative value with decimal value .0 or .5
+
+    /** Score of the player. Non-negative value with decimal value .0 or .5 */
     private double score;
-    // name of the player. finalized upon initialization of the player object.
+
+    /** Name of the player, finalized upon initialization of the player object */
     private final String name;
 
     /** Creates a new player, requires an input for the name upon initialization */
