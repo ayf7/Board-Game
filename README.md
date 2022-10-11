@@ -1,10 +1,10 @@
-# BoardGame.Board Games
+# Board Games
 <h3>Project Specifications</h3>
 Date Started: August 4, 2022<br>
 Programming Language: Java 18<br>
 Build System:	IntelliJ<br>
 JDK: Eclipse Termurin v17.0.4<br>
-Last Updated: September 16, 2022<br>
+Last Updated: October 11, 2022<br>
 <h3>Overview</h3>
 <p>The program allows the user to play different board games in the console, using user
   input to chessMove the pieces and update the board accordingly. Each game requires two
