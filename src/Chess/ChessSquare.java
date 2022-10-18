@@ -1,3 +1,5 @@
+package Chess;
+
 import BoardGame.Piece;
 import BoardGame.Square;
 

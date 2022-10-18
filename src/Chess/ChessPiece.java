@@ -1,57 +1,50 @@
-import BoardGame.Piece;
+package Chess;
 
-/** Represents a piece on a specific square */
-public abstract class ChessPiece implements Piece {
+import BoardGame.DefaultPiece;
 
-    /** The side of the piece. Either 1 or 2, corresponds to which player
-    owns this piece */
-    private final int side;
+/** Represents a chess piece on a specific square. */
+public abstract class ChessPiece extends DefaultPiece {
 
     /** The type of piece. Represented as an integer that corresponds to
     the index of types. */
     protected final int type;
 
-    /**  List of the possible types as a list of string, index corresponding to
+    /**  List of the possible type names. Index corresponds to
     the int type value. */
     protected static String[] typeList;
 
     /** The state of the piece's movement during the
-    game. True if the piece has not moved. */
+    game. True if the piece has n   ot moved. */
     private boolean unmoved;
 
-    /** Creates a chess piece (not of type ChessPiece)
-     * @param side integer that corresponds to the player number
-     * @param type integer that corresponds to the index in the types list
+    /** Creates a chess piece.
+     * @param side integer that corresponds to the player number.
+     * @param type integer that corresponds to the index in the types list.
      */
     public ChessPiece(int side, int type) {
-        this.side = side;
+        super(side);
         this.type = type;
         typeList = new String[]{"pawn", "knight", "bishop", "rook",
                 "queen","king"};
         unmoved = true;
     }
 
-    @Override
-    public int getSide() {
-        return side;
-    }
-
-    @Override
+    /** Returns the name of the piece. */
     public String getTypeName() {
         return typeList[type];
     }
 
-    @Override
+    /** Returns whether the piece has moved */
     public boolean hasNotMoved() {
         return unmoved;
     }
 
-    @Override
+    /** Sets the unmoved state to true after the pawn moves. */
     public void move() {
         unmoved = false;
     }
 
-    @Override
+    /** Resets the piece to initial state. */
     public void reset() {
         unmoved = true;
     }

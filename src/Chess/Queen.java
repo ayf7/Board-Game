@@ -1,7 +1,9 @@
-/** Represents a queen on a specific square*/
+package Chess;
+
+/** Represents a queen on a specific square. */
 public class Queen extends ChessPiece{
 
-    /** Creates a Queen object using the ChessPiece superclass
+    /** Creates a Queen object using the ChessPiece superclass.
      * @param side : integer that corresponds to the player number */
     public Queen(int side) {
         super(side, 4);

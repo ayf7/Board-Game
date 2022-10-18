@@ -1,25 +1,27 @@
+package Chess;
+
 import BoardGame.Board;
 import BoardGame.Move;
 import BoardGame.Square;
 import java.util.*;
 
-/** Represents the chess board of a chess game, implements the board interface */
+/** Represents the chess board of a chess game, implements the board interface. */
 public class ChessBoard implements Board {
 
-    /** 2D array of square objects, representing the board */
+    /** 2D array of square objects, representing the board. */
     protected ChessSquare[][] board;
 
-    /** Immutable 2D array of pieces for permanent reference
+    /** Immutable 2D array of pieces for permanent reference.
      <p>
-     * Row 0 is the list of pieces for player 1, row 1 is the list of pieces for player 2
+     * Row 0 is the list of pieces for player 1, row 1 is the list of pieces for player 2.
      <p>
-     * Columns 0-7 are the pawns, columns 8-15 are the pieces in order from a/h1 rook to a/h8 rook */
+     * Columns 0-7 are the pawns, columns 8-15 are the pieces in order from a/h1 rook to a/h8 rook. */
     private final ChessPiece[][] pieceList;
 
-    /** Reference to the last piece to have moved */
+    /** Reference to the last piece to have moved. */
     private ChessPiece lastPiece;
 
-    /** Creates a new chess board object with the default starting position */
+    /** Creates a new chess board object with the default starting position. */
     public ChessBoard() {
         board = new ChessSquare[8][8];
 
@@ -82,9 +84,11 @@ public class ChessBoard implements Board {
 
         // additional changes that need to be made if necessary - promotion, castling, en passant
         switch (chessMove.getType()) {
+
             // remove the pawn that is en passant-ed
             case "EPMove" -> coordinateToSquare(((EPChessMove) chessMove).getPawn()).remove();
             case "CastleMove" -> {
+
                 // move the corresponding rook
                 coordinateToSquare(((CastleChessMove) chessMove).getRookTo()).add(
                         coordinateToSquare(((CastleChessMove) chessMove).getRookFrom()).getPiece());
@@ -217,7 +221,7 @@ public class ChessBoard implements Board {
     }
 
     /** Finds all squares a piece at the specified coordinate covers, not necessarily where it
-     * can legally move to
+     * can legally move to.
      * @Pre-condition: square at coord must have a piece
      * @param coord coordinate with the piece that we want to find the occupying squares
      * @return covered squares as move objects in ArrayList */
@@ -370,7 +374,7 @@ public class ChessBoard implements Board {
     }
 
     /** Checks if the row and column are in range of the 2D board. Private method because
-     * it should be used exclusively by the ChessBoard
+     * it should be used exclusively by the ChessBoard.
      * @param row row being checked
      * @param col column being checked
      * @return true if the rows and columns are in the 2D board, false if not
@@ -379,8 +383,8 @@ public class ChessBoard implements Board {
         return (0 <= row && row <= 7 && 0 <= col && col <= 7);
     }
 
-    /** Takes a BoardGame.Move object and determines whether that move will lead to check, which is not
-     * allowed
+    /** Takes a move object and determines whether that move will lead to check, which is not
+     * allowed.
      * @Pre-condition: coord must have the piece to be moved, move is the corresponding move that
      * the piece can legally make
      * @param chessMove the move that is being tested
@@ -404,7 +408,7 @@ public class ChessBoard implements Board {
         return testBoard.kingInCheck(other);
     }
 
-    /** Checks if the king of either side is in check at any given position
+    /** Checks if the king of either side is in check at any given position.
      * @Pre-condition: the king of "other" must not be in check itself
      * @param other the side we are determining if in check
      * @return true if the side is in check, false if not
@@ -465,7 +469,7 @@ public class ChessBoard implements Board {
         return letter + Character.toString(number);
     }
 
-    /** Returns a list of the coordinates where all of one side's pieces are
+    /** Returns a list of the coordinates where all of one side's pieces are.
      * @Pre-condition: side must be 1 or 2
      * @return a list of squares of that side
      */
@@ -487,11 +491,11 @@ public class ChessBoard implements Board {
 
     /** Special subclass of ChessBoard used primarily for testing the
      * legality of moves in runHypothetical. Creates a duplicate copy of the ChessBoard at any instance.
-     * Contains an overriden movePiece with fewer processes, custom constructor.*/
+     * Contains an overriden movePiece with fewer processes, custom constructor. */
     private static class ChessBoardTester extends ChessBoard {
 
         /** Constructor of a tester chess board, pieces initialized in the same configuration
-         * as the parameter. Does not account for EPV, unmoved states.
+         * as the parameter. Does not account for EPV or unmoved states.
          * @param startPosition the 2D array of ChessSquares that we wish to test on */
         ChessBoardTester(ChessSquare[][] startPosition) {
             board = new ChessSquare[8][8];

@@ -1,20 +1,23 @@
+package Chess;
+
 import BoardGame.Game;
 import java.util.*;
 
 /** Represents a chess game */
 public class ChessGame implements Game {
 
-    /** list of player objects, represents the 2 players that are playing the board game
-    // white is index 0, black is index 1 */
+    /** List of players, representing the 2 players that are playing the board game.
+     * Player 1 is index 0, and player 2 is index 1. */
     private final Player[] players;
 
-    /** Integer between 1 and 2, corresponding to the player's playerNum value */
+    /** The player turn number, which is an integer between 1 and 2, corresponding to
+     * the player's playerNum value. */
     private int playerTurn;
 
-    /** Chess board in the chess game */
+    /** The chess board in a single chess game. */
     private final ChessBoard board;
 
-    /** Creates a new chess game */
+    /** Creates a new chess game. */
     public ChessGame() {
         players = new Player[]{new Player(), new Player()};
         playerTurn = 1;
@@ -56,7 +59,7 @@ public class ChessGame implements Game {
     @Override
     public boolean promptPlayerMove() {
         // gathers all legal moves of the player moving
-        Hashtable<String, ArrayList<ChessMove>> moves = new Hashtable<>();
+        HashMap<String, ArrayList<ChessMove>> moves = new HashMap<>();
         ArrayList<String> coords = board.listOfCoords(playerTurn);
 
         int count = 0;

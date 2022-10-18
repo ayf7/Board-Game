@@ -1,7 +1,9 @@
-/** Represents a king on a specific square*/
+package Chess;
+
+/** Represents a king on a specific square. */
 public class King extends ChessPiece{
 
-    /** Creates a King object using the ChessPiece superclass
+    /** Creates a King object using the ChessPiece superclass.
      * @param side integer that corresponds to the player number */
     public King(int side) {
         super(side, 5);

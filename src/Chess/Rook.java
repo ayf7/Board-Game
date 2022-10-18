@@ -1,7 +1,9 @@
-/** Represents a rook on a specific square*/
+package Chess;
+
+/** Represents a rook on a specific square. */
 public class Rook extends ChessPiece{
 
-    /** Constructor: creates a Rook object using the ChessPiece superclass
+    /** Constructor: creates a Rook object using the ChessPiece superclass.
      * @param side integer that corresponds to the player number */
     public Rook(int side) {
         super(side, 3);
