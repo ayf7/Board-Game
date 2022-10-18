@@ -1,7 +1,10 @@
 package Chess;
 
 import BoardGame.Game;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 /** Represents a chess game */
 public class ChessGame implements Game {
@@ -49,8 +52,7 @@ public class ChessGame implements Game {
             else { // stalemate
                 nextGame = endGame(0);
             }
-            // reset the board
-            if (nextGame) {
+            if (nextGame) { // reset the board
                 newGame();
             }
         }
@@ -85,6 +87,11 @@ public class ChessGame implements Game {
             Scanner input = new Scanner(System.in);
             String inputCoord = input.nextLine();
 
+            if (inputCoord.equals("tie")) {
+                playerTurn = 0;
+                return true;
+            }
+
             // checks if the input is a coord
             for (String coord : moves.keySet()) {
                 if (inputCoord.equals(coord) && moves.get(coord).size() > 0) {
@@ -105,17 +112,20 @@ public class ChessGame implements Game {
             // ask for an input
             Scanner input = new Scanner(System.in);
             String inputCoord = input.nextLine();
-            // checks if the input string is in the list of moves from key "from"
+
             if (inputCoord.equals("back")) {
                 return true;
             }
+
             // access the move from the hash table
             for (ChessMove chessMove : moves.get(from)) {
+                // checks if the input string is in the list of moves from key "from"
                 if (chessMove.getTo().equals(inputCoord)) {
                     chessMove1 = chessMove;
                     invalid = false;
                 }
             }
+
             if (invalid) {
                 System.out.print("Invalid, try again: ");
             }
@@ -130,26 +140,34 @@ public class ChessGame implements Game {
 
     @Override
     public boolean checkGameEnd() {
-        if (board.kingInCheck(3-playerTurn)) {
-            // checkmate
-            System.out.println("Checkmate!");
+        // draw by agreement
+        if (playerTurn == 0) {
+            System.out.println("Draw by agreement!");
+            return false;
         }
+        // checkmate (returns true)
+        else if (board.kingInCheck(3-playerTurn)) {
+            System.out.println("Checkmate!");
+            return true;
+        }
+        // stalemate
         else {
-            // stalemate
             System.out.println("Stalemate!");
         }
-        return true;
+        // draws return false
+        return false;
     }
 
     @Override
     public boolean endGame(int winnerSide) {
         // update score
+        System.out.println(winnerSide);
         if (winnerSide > 0) { // if either side won
             players[winnerSide-1].addScore(1);
         }
         else { // if it is a draw
             players[0].addScore(0.5);
-            players[0].addScore(0.5);
+            players[1].addScore(0.5);
         }
         // print updated scores
         printStats();
@@ -186,6 +204,12 @@ public class ChessGame implements Game {
     public void printStats() {
         System.out.println(players[0].getName() + ": " + players[0].getScore());
         System.out.println(players[1].getName() + ": " + players[1].getScore());
+    }
+
+    /** Chess game tester. */
+    public static void main(String[] args) {
+        ChessGame game = new ChessGame();
+        game.play();
     }
 }
 
