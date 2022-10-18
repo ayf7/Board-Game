@@ -1,5 +1,7 @@
 package BoardGame;
 
+/** A square on the board. Responsible for adding or removing a piece from itself, and
+ * receiving any information about pieces that occupy a square to relay the board. */
 public interface Square {
 
     /** Adds a piece to the square

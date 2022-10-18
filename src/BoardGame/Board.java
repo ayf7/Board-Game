@@ -2,7 +2,8 @@ package BoardGame;
 
 import java.util.*;
 
-/** General interface for a board to be used in a board game */
+/** The board of a board game. Consists of square objects. Manages how pieces are able to
+ * move around on the board. */
 public interface Board {
 
     /** Sets up the board for a new game. */
