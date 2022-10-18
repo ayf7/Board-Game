@@ -16,5 +16,5 @@ Last Updated: October 11, 2022<br>
   To display the chess board properly, depending on what OS is being used, it may be
   recommended to set the console font to Segoe UI Symbol. </p>
 <h3>Current Update</h3>
-<p>The implementation of chess is nearly complete, and can be playtested freely. If you encounter
-  any bugs, feel free to let me know!</p>
+<p>10/13: I am currently improving the package of the board game interfaces, so I can have a smooth
+implementation of other board games I am planning to create. </p>
