@@ -3,7 +3,9 @@ package Chess;
 import BoardGame.Board;
 import BoardGame.Move;
 import BoardGame.Square;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /** Represents the chess board of a chess game, implements the board interface. */
 public class ChessBoard implements Board {

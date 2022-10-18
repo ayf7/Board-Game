@@ -12,6 +12,7 @@ public class EPChessMove extends ChessMove {
         this.pawn = ChessBoard.squareToCoordinate(pawn);
     }
 
+    /** Returns the pawn that is being captured. */
     public String getPawn() {
         return pawn;
     }

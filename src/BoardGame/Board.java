@@ -1,6 +1,6 @@
 package BoardGame;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /** The board of a board game. Consists of square objects. Manages how pieces are able to
  * move around on the board. */
